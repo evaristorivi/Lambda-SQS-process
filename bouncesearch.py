@@ -92,6 +92,11 @@ def lambda_handler(event, context):
 
     #print(UNIQUEELEMENTS)
     print("Total messages processed: " + str(counter))
+    outfile  = open('/tmp/' + DATA_FILE, "w")
+    for recons in data:
+        outfile.write(str(recons))
+        outfile.write('\n')
+    outfile.close()
     if counter == 0:
         print ("There are no new messages in the queue to be processed")
         exit()
