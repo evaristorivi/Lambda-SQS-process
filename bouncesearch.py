@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+
+# Lambda-SQS-process
+# Evaristo R - Cloud, Middleware y Sistemas - L1
+# erivieccio@atsistemas.com
+
+
 import json
 import boto3
 import re
@@ -8,14 +15,17 @@ import re
 
 # CONFIG de S3
 BUCKET = 's3-bounce-review'
-FICHERO_DATOS = 'bounce_list.csv'
+DATA_FILE = 'bounce_list.csv'
 
 ######################################################
 ######################################################
+
+# CONFIG SQS
+NAME_QUEUE = 'https://eu-west-1.queue.amazonaws.com/611720150677/SNS-Bounce-Review'
 
  # Cliente s3
 s3 = boto3.resource('s3')
-s3_object = s3.Object(BUCKET, FICHERO_DATOS)
+s3_object = s3.Object(BUCKET, DATA_FILE)
 
 data = s3_object.get()['Body'].read().decode('utf-8').splitlines()
 
@@ -66,38 +76,39 @@ def get_messages_from_queue(queue_url):
         #    )
 
 
-contador=0
-LISTAMENSAJES=[]
-for message in get_messages_from_queue('https://eu-west-1.queue.amazonaws.com/611720150677/SNS-Bounce-Review'):
+counter=0
+LISTOFMESSAGES=[]
+for message in get_messages_from_queue(NAME_QUEUE):
     #print(json.dumps(message))
-    contador=contador+1
+    counter=counter+1
     process_user_sqs(json.dumps(message))
-    LISTAMENSAJES.append(process_user_sqs(json.dumps(message)))
+    LISTOFMESSAGES.append(process_user_sqs(json.dumps(message)))
 
-ELEMENTOSUNICOS = []
-for ORDENANDO in LISTAMENSAJES:
-    if ORDENANDO not in ELEMENTOSUNICOS:
-        ELEMENTOSUNICOS.append(ORDENANDO)
+UNIQUEELEMENTS = []
+for ORDERING in LISTOFMESSAGES:
+    if ORDERING not in UNIQUEELEMENTS:
+        UNIQUEELEMENTS.append(ORDERING)
 
-#print(ELEMENTOSUNICOS)
-print("Total mensajes procesados: " + str(contador))
+#print(UNIQUEELEMENTS)
+print("Total messages processed: " + str(counter))
 
 NEW_EMAIL_LIST=[]
 OLDUSER=[]
-#file1 = open(FICHERO_DATOS, 'r')
+#file1 = open(DATA_FILE, 'r')
 for lineas in data:
-    OLDUSER.append(lineas) 
+    OLDUSER.append(lineas)
+print ("The following users have already been added") 
 print (OLDUSER)
 print ("###")
-outfile  = open(FICHERO_DATOS, "a")
-    
-for lineasescribir in ELEMENTOSUNICOS:
-    if lineasescribir not in OLDUSER:
-        print (lineasescribir)
-        outfile.write(str(lineasescribir))
+outfile  = open(DATA_FILE, "a")
+print ("The following users are added: ")    
+for linewrite in UNIQUEELEMENTS:
+    if linewrite not in OLDUSER:
+        print (linewrite)
+        outfile.write(str(linewrite))
         outfile.write('\n')
 
 outfile.close()
 
-# Subimos el fichero a s3
-s3.Bucket(BUCKET).upload_file(FICHERO_DATOS, FICHERO_DATOS)
+# Upload to S3
+s3.Bucket(BUCKET).upload_file(DATA_FILE, DATA_FILE)
