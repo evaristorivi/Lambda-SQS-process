@@ -105,10 +105,13 @@ def lambda_handler(event, context):
     print (OLDUSER)
     print ("###")
     outfile  = open('/tmp/' + DATA_FILE, "a")
-    print ("The following users are added: ")    
+    print ("The following users are added: ")
     for linewrite in UNIQUEELEMENTS:
         if linewrite not in OLDUSER:
             print (linewrite)
+            if linewrite is empty:
+                print ("No new users to add")
+                exit ()
             outfile.write(str(linewrite))
             outfile.write('\n')
 
