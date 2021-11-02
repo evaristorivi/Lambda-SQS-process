@@ -93,7 +93,7 @@ def lambda_handler(event, context):
     #print(UNIQUEELEMENTS)
     print("Total messages processed: " + str(counter))
     if counter == 0:
-        print ("No hay mensajes nuevos en la cola a procesar")
+        print ("There are no new messages in the queue to be processed")
         exit()
 
     NEW_EMAIL_LIST=[]
