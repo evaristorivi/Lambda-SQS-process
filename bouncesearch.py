@@ -21,7 +21,7 @@ DATA_FILE = 'bounce_list.csv'
 ######################################################
 
 # CONFIG SQS
-NAME_QUEUE = 'https://eu-west-1.queue.amazonaws.com/611720150677/SNS-Bounce-Review'
+URL_QUEUE = 'https://eu-west-1.queue.amazonaws.com/611720150677/SNS-Bounce-Review'
 
 
 
@@ -79,7 +79,7 @@ def lambda_handler(event, context):
     data = s3_object.get()['Body'].read().decode('utf-8').splitlines()
     counter=0
     LISTOFMESSAGES=[]
-    for message in get_messages_from_queue(NAME_QUEUE):
+    for message in get_messages_from_queue(URL_QUEUE):
         #print(json.dumps(message))
         counter=counter+1
         process_user_sqs(json.dumps(message))
