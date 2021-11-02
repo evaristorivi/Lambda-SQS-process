@@ -23,11 +23,7 @@ DATA_FILE = 'bounce_list.csv'
 # CONFIG SQS
 NAME_QUEUE = 'https://eu-west-1.queue.amazonaws.com/611720150677/SNS-Bounce-Review'
 
- # Cliente s3
-s3 = boto3.resource('s3')
-s3_object = s3.Object(BUCKET, DATA_FILE)
 
-data = s3_object.get()['Body'].read().decode('utf-8').splitlines()
 
 
 
@@ -66,49 +62,54 @@ def get_messages_from_queue(queue_url):
             for msg in resp['Messages']
         ]
 
-        #resp = sqs_client.delete_message_batch(
-        #    QueueUrl=queue_url, Entries=entries
-        #)
+        resp = sqs_client.delete_message_batch(
+            QueueUrl=queue_url, Entries=entries
+        )
 
-        #if len(resp['Successful']) != len(entries):
-        #    raise RuntimeError(
-        #        f"Failed to delete messages: entries={entries!r} resp={resp!r}"
-        #    )
+        if len(resp['Successful']) != len(entries):
+            raise RuntimeError(
+                f"Failed to delete messages: entries={entries!r} resp={resp!r}"
+            )
 
+def lambda_handler(event, context):
+     # Cliente s3
+    s3 = boto3.resource('s3')
+    s3_object = s3.Object(BUCKET, DATA_FILE)
+    
+    data = s3_object.get()['Body'].read().decode('utf-8').splitlines()
+    counter=0
+    LISTOFMESSAGES=[]
+    for message in get_messages_from_queue(NAME_QUEUE):
+        #print(json.dumps(message))
+        counter=counter+1
+        process_user_sqs(json.dumps(message))
+        LISTOFMESSAGES.append(process_user_sqs(json.dumps(message)))
 
-counter=0
-LISTOFMESSAGES=[]
-for message in get_messages_from_queue(NAME_QUEUE):
-    #print(json.dumps(message))
-    counter=counter+1
-    process_user_sqs(json.dumps(message))
-    LISTOFMESSAGES.append(process_user_sqs(json.dumps(message)))
+    UNIQUEELEMENTS = []
+    for ORDERING in LISTOFMESSAGES:
+        if ORDERING not in UNIQUEELEMENTS:
+            UNIQUEELEMENTS.append(ORDERING)
 
-UNIQUEELEMENTS = []
-for ORDERING in LISTOFMESSAGES:
-    if ORDERING not in UNIQUEELEMENTS:
-        UNIQUEELEMENTS.append(ORDERING)
+    #print(UNIQUEELEMENTS)
+    print("Total messages processed: " + str(counter))
 
-#print(UNIQUEELEMENTS)
-print("Total messages processed: " + str(counter))
+    NEW_EMAIL_LIST=[]
+    OLDUSER=[]
+    #file1 = open(DATA_FILE, 'r')
+    for lineas in data:
+        OLDUSER.append(lineas)
+    print ("The following users have already been added") 
+    print (OLDUSER)
+    print ("###")
+    outfile  = open('/tmp/' + DATA_FILE, "a")
+    print ("The following users are added: ")    
+    for linewrite in UNIQUEELEMENTS:
+        if linewrite not in OLDUSER:
+            print (linewrite)
+            outfile.write(str(linewrite))
+            outfile.write('\n')
 
-NEW_EMAIL_LIST=[]
-OLDUSER=[]
-#file1 = open(DATA_FILE, 'r')
-for lineas in data:
-    OLDUSER.append(lineas)
-print ("The following users have already been added") 
-print (OLDUSER)
-print ("###")
-outfile  = open(DATA_FILE, "a")
-print ("The following users are added: ")    
-for linewrite in UNIQUEELEMENTS:
-    if linewrite not in OLDUSER:
-        print (linewrite)
-        outfile.write(str(linewrite))
-        outfile.write('\n')
+    outfile.close()
 
-outfile.close()
-
-# Upload to S3
-s3.Bucket(BUCKET).upload_file(DATA_FILE, DATA_FILE)
+    # Upload to S3
+    s3.Bucket(BUCKET).upload_file('/tmp/' + DATA_FILE, DATA_FILE)
