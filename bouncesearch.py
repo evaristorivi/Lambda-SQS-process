@@ -13,6 +13,12 @@ FICHERO_DATOS = 'bounce_list.csv'
 ######################################################
 ######################################################
 
+ # Cliente s3
+s3 = boto3.resource('s3')
+s3_object = s3.Object(BUCKET, FICHERO_DATOS)
+
+data = s3_object.get()['Body'].read().decode('utf-8').splitlines()
+
 
 
 
@@ -78,9 +84,9 @@ print("Total mensajes procesados: " + str(contador))
 
 NEW_EMAIL_LIST=[]
 OLDUSER=[]
-file1 = open(FICHERO_DATOS, 'r')
-for lineas in file1:
-    OLDUSER.append(lineas.replace("\n","")) 
+#file1 = open(FICHERO_DATOS, 'r')
+for lineas in data:
+    OLDUSER.append(lineas) 
 print (OLDUSER)
 print ("###")
 outfile  = open(FICHERO_DATOS, "a")
@@ -92,3 +98,6 @@ for lineasescribir in ELEMENTOSUNICOS:
         outfile.write('\n')
 
 outfile.close()
+
+# Subimos el fichero a s3
+s3.Bucket(BUCKET).upload_file(FICHERO_DATOS, FICHERO_DATOS)
