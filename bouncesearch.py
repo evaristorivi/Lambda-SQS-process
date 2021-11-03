@@ -114,9 +114,6 @@ def lambda_handler(event, context):
     for linewrite in UNIQUEELEMENTS:
         if linewrite not in OLDUSER:
             print (linewrite)
-            if not linewrite:
-                print ("No new users to add")
-                exit ()
             outfile.write(str(linewrite))
             outfile.write('\n')
 
