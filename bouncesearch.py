@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 # Lambda-SQS-process
+# Subscribe an SQS queue to an SNS topic and this code will export the emails found and add them to a csv in S3.
+
 # Evaristo R - Cloud, Middleware y Sistemas - L1
 # erivieccio@atsistemas.com
 
