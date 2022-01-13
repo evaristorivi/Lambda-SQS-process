@@ -82,10 +82,14 @@ def lambda_handler(event, context):
     counter=0
     LISTOFMESSAGES=[]
     for message in get_messages_from_queue(URL_QUEUE):
-        #print(json.dumps(message))
-        counter=counter+1
-        process_user_sqs(json.dumps(message))
-        LISTOFMESSAGES.append(process_user_sqs(json.dumps(message)))
+        if "Suppressed" in message['Body']:
+            #print(json.dumps(message))
+            counter=counter+1
+            process_user_sqs(json.dumps(message))
+            LISTOFMESSAGES.append(process_user_sqs(json.dumps(message)))
+        else:
+            print ("There are no new messages witch body suppressed")
+            exit()
 
     UNIQUEELEMENTS = []
     for ORDERING in LISTOFMESSAGES:
