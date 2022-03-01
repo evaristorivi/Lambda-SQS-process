@@ -88,8 +88,8 @@ def lambda_handler(event, context):
             process_user_sqs(json.dumps(message))
             LISTOFMESSAGES.append(process_user_sqs(json.dumps(message)))
         else:
-            print ("There are no new messages witch body suppressed")
-            exit()
+            print ("This not is a message witch body suppressed")
+            #exit()
 
     UNIQUEELEMENTS = []
     for ORDERING in LISTOFMESSAGES:
