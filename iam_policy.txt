@@ -1,0 +1,30 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "sqs:ReceiveMessage"
+            ],
+            "Resource": [
+                "ARN_S3_file.csv",
+                "ARN_SQS"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "sqs:DeleteMessage",
+                "s3:PutObject",
+                "sqs:PurgeQueue"
+            ],
+            "Resource": [
+                "ARN_S3_file.csv",
+                "ARN_SQS"
+            ]
+        }
+    ]
+}
