@@ -1,0 +1,18 @@
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "sns.amazonaws.com"
+      },
+      "Action": "sqs:SendMessage",
+      "Resource": "ARN_SQS",
+      "Condition": {
+        "ArnEquals": {
+          "aws:SourceArn": "ARN_SNS"
+        }
+      }
+    }
+  ]
+}
