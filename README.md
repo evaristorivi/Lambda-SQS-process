@@ -1,6 +1,7 @@
 # Lambda-SQS-process
  Lambda-SQS-process
 
+![Alt text](./scheme.png?raw=true "Esquema")
 
 
 bouncesearch.py fue la primera versión que solo encontraba uusarios rebotados.
