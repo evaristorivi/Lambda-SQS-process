@@ -3,13 +3,11 @@
 # Lambda-SQS-process
 # Subscribe an SQS queue to an SNS topic and this code will export the emails found and add them to a csv in S3.
 
-#Evaristo R. Rivieccio Vega 
-
-
+#Evaristo R. Rivieccio Vega - evaristo.rivieccio@colex.grupo-sm.com - Operaciones - Grupo SM
+# evaristo.rivieccio@colex.grupo-sm.com
 
 import json
 import boto3
-import re
 
 # CONFIG
 ######################################################
@@ -17,7 +15,7 @@ import re
 
 # CONFIG de S3
 BUCKET = 'BUCKET'
-DATA_FILE = 'FILE.csv'
+DATA_FILE = 'FILE.CSV'
 
 ######################################################
 ######################################################
@@ -27,8 +25,8 @@ URL_QUEUE = 'URL_SQS'
 
 
 USUARIOS_A_MON = [
-    "['USUARIOS_A_FILTRAR']",
-    "['USUARIOS_A_FILTRAR']"
+    "['USUARIO_A_FILTRAR']",
+    "['OTRO_USUARIO_A_FILTRAR']"
     ]
 
 
@@ -60,14 +58,14 @@ def get_messages_from_queue(queue_url):
             for msg in resp['Messages']
         ]
 
-        # resp = sqs_client.delete_message_batch(
-        #     QueueUrl=queue_url, Entries=entries
-        # )
+        resp = sqs_client.delete_message_batch(
+            QueueUrl=queue_url, Entries=entries
+        )
 
-        # if len(resp['Successful']) != len(entries):
-        #     raise RuntimeError(
-        #         f"Failed to delete messages: entries={entries!r} resp={resp!r}"
-        #     )
+        if len(resp['Successful']) != len(entries):
+            raise RuntimeError(
+                f"Failed to delete messages: entries={entries!r} resp={resp!r}"
+            )
 
 def lambda_handler(event, context):
     # Cliente s3
