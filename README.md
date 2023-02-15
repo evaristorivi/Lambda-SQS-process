@@ -12,3 +12,4 @@ sqs_process.py es la v2 mejorada, que parsea correctamente y en este caso hace u
 <br />
 
 Necesitamos también un ses_list.csv vacío en el bucket s3.
+----
